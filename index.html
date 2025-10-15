@@ -256,19 +256,6 @@
     <div class="dot"></div>
 </div>
 
-
-<!--const headings = [-->
-<!--"Simple Heading",-->
-<!--"The Best of Land and Sea ... BioCeutically®",-->
-<!--"Best of Land and Sea... Organically®",-->
-<!--"The Best of Land and Sea...Biotically®",-->
-<!--"The Best of Land and Sea... Both Nutraceutically & Pharmaceutically®",-->
-<!--"The Best of Land and Sea... Scientifically®",-->
-<!--"The Best of Land and Sea... Intellectually®"-->
-<!--];-->
-
-
-
 <div id="container">
     <div class="image-wrapper">
         <img src="/images/BG1_CASGroup.jpg">
@@ -381,8 +368,8 @@
     const wrappers = document.querySelectorAll('.image-wrapper');
     const dots = document.querySelectorAll('.dot');
     const logos = document.querySelectorAll('.logo');
-    let currentIndex = 0;
-    let isAnimating = false;
+    let currentDisplayingLogoIndex = 0;
+    let isScrollingToNewSection = false;
     const visitedSections = new Set();
 
     // Add tooltips to dots
@@ -395,7 +382,7 @@
 
     function updateIndicator() {
         dots.forEach((dot, i) => {
-            dot.classList.toggle('active', i === currentIndex);
+            dot.classList.toggle('active', i === currentDisplayingLogoIndex);
         });
     }
 
@@ -407,10 +394,10 @@
     }
 
     function scrollToImage(index) {
-        if (index < 0 || index >= wrappers.length || isAnimating) return;
+        if (index < 0 || index >= wrappers.length || isScrollingToNewSection) return;
 
-        isAnimating = true;
-        currentIndex = index;
+        isScrollingToNewSection = true;
+        currentDisplayingLogoIndex = index;
         updateIndicator();
 
         // Trigger logo animation if this is the first visit
@@ -419,7 +406,7 @@
             wrappers[index].querySelector('.logo-container').classList.add('focused');
             setTimeout(() => {
                 const logo = wrappers[index].querySelector('.logo');
-                logo.classList.add('tilt-active'); // now mouse can affect it
+                logo.classList.add('tilt-active'); // now mouse can affect it, after the initial anim completes because 2 animations at once is expensive/lags
             }, 1200);
         }
 
@@ -429,12 +416,12 @@
         });
 
         setTimeout(() => {
-            isAnimating = false;
+            isScrollingToNewSection = false;
         }, 600);
     }
 
     container.addEventListener('wheel', (e) => {
-        if (isAnimating) {
+        if (isScrollingToNewSection) {
             e.preventDefault();
             return;
         }
@@ -442,9 +429,9 @@
         e.preventDefault();
 
         if (e.deltaY > 0) {
-            scrollToImage(currentIndex + 1);
+            scrollToImage(currentDisplayingLogoIndex + 1);
         } else {
-            scrollToImage(currentIndex - 1);
+            scrollToImage(currentDisplayingLogoIndex - 1);
         }
     }, {passive: false});
 
@@ -514,22 +501,22 @@
     }, {passive: false});
 
     container.addEventListener('touchend', (e) => {
-        if (isAnimating) return;
+        if (isScrollingToNewSection) return;
         touchEndY = e.changedTouches[0].clientY;
         const delta = touchStartY - touchEndY;
 
         if (Math.abs(delta) > 50) {
             if (delta > 0) {
-                scrollToImage(currentIndex + 1);
+                scrollToImage(currentDisplayingLogoIndex + 1);
             } else {
-                scrollToImage(currentIndex - 1);
+                scrollToImage(currentDisplayingLogoIndex - 1);
             }
         }
     });
     
     
     
-    //More stuff here for the rotation toggle swithc
+    //Stuff for the rotation toggle swithc, to reset the rotations of the active one when you turn it off
     const rotationToggle = document.getElementById('rotation-toggle');
 
     rotationToggle.addEventListener('change', () => {
