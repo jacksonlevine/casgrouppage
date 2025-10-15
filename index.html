@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>casgrouppage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: #111;
+            overflow: hidden;
+        }
+
+        #container {
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .image-wrapper {
+            position: relative;
+        }
+
+        .image-wrapper img {
+            display: block;
+            min-height: 100vh;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .logo {
+            opacity: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(6);
+            width: 50vw;
+            aspect-ratio: 1;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            pointer-events: none;
+            filter: blur(10px) brightness(1);
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+            filter 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.1s linear;
+            transform-style: preserve-3d;
+        }
+
+        .logo.focused {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            filter: blur(0px) brightness(1);
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+            filter 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.1s linear;
+        }
+
+        .logo.focused.tilt-active {
+            transition: transform 0.3s ease-out,
+            filter 0.3s ease-out;
+        }
+
+        #indicator {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .dot.active {
+            background: #4A90E2;
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
+        }
+
+        .dot:hover {
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .dot.active:hover {
+            background: #4A90E2;
+        }
+
+        .tooltip {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            white-space: nowrap;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .dot:hover .tooltip {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<div id="indicator">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+</div>
+
+<div id="container">
+    <div class="image-wrapper">
+        <img src="/images/BG1_CASGroup.jpg">
+        <div class="logo" style="background-image: url('/images/logos/1.jpg');"></div>
+    </div>
+    <div class="image-wrapper">
+        <img src="/images/BG2_CASBioceuticals.jpg">
+        <div class="logo" style="background-image: url('/images/logos/2.jpg');"></div>
+    </div>
+    <div class="image-wrapper">
+        <img src="/images/BG3_CASOrganics.jpg">
+        <div class="logo" style="background-image: url('/images/logos/3.jpg');"></div>
+    </div>
+    <div class="image-wrapper">
+        <img src="/images/BG4_CASBiotics.jpg">
+        <div class="logo" style="background-image: url('/images/logos/4.jpg');"></div>
+    </div>
+    <div class="image-wrapper">
+        <img src="/images/BG5_CASBioSciences.jpg">
+        <div class="logo" style="background-image: url('/images/logos/5.jpg');"></div>
+    </div>
+    <div class="image-wrapper">
+        <img src="/images/BG6_CASPublishing.jpg">
+        <div class="logo" style="background-image: url('/images/logos/6.jpg');"></div>
+    </div>
+    <div class="image-wrapper">
+        <img src="/images/BG7_CASProperties.jpg">
+        <div class="logo" style="background-image: url('/images/logos/7.jpg');"></div>
+    </div>
+</div>
+
+<script>
+    const sectionNames = [
+        "CAS Group",
+        "CAS Bioceuticals",
+        "CAS Organics",
+        "CAS Biotics",
+        "CAS BioSciences",
+        "CAS Publishing",
+        "CAS Properties"
+    ];
+
+    const container = document.getElementById('container');
+    const wrappers = document.querySelectorAll('.image-wrapper');
+    const dots = document.querySelectorAll('.dot');
+    const logos = document.querySelectorAll('.logo');
+    let currentIndex = 0;
+    let isAnimating = false;
+    const visitedSections = new Set();
+
+    // Add tooltips to dots
+    dots.forEach((dot, i) => {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
+        tooltip.textContent = sectionNames[i];
+        dot.appendChild(tooltip);
+    });
+
+    function updateIndicator() {
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentIndex);
+        });
+    }
+
+    function getImageCenter(index) {
+        const img = wrappers[index];
+        const imgTop = img.offsetTop;
+        const imgHeight = img.offsetHeight;
+        return imgTop + (imgHeight / 2) - (window.innerHeight / 2);
+    }
+
+    function scrollToImage(index) {
+        if (index < 0 || index >= wrappers.length || isAnimating) return;
+
+        isAnimating = true;
+        currentIndex = index;
+        updateIndicator();
+
+        // Trigger logo animation if this is the first visit
+        if (!visitedSections.has(index)) {
+            visitedSections.add(index);
+            // Small delay to ensure smooth animation
+            setTimeout(() => {
+                logos[index].classList.add('focused');
+            }, 100);
+        }
+
+        container.scrollTo({
+            top: getImageCenter(index),
+            behavior: 'smooth'
+        });
+
+        setTimeout(() => {
+            isAnimating = false;
+        }, 600);
+    }
+
+    container.addEventListener('wheel', (e) => {
+        if (isAnimating) {
+            e.preventDefault();
+            return;
+        }
+
+        e.preventDefault();
+
+        if (e.deltaY > 0) {
+            scrollToImage(currentIndex + 1);
+        } else {
+            scrollToImage(currentIndex - 1);
+        }
+    }, { passive: false });
+
+    dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+            scrollToImage(i);
+        });
+    });
+
+    window.addEventListener('load', () => {
+        scrollToImage(0);
+    });
+
+    // 3D tilt effect on logos
+    const maxTilt = 20; // Maximum rotation in degrees
+
+    wrappers.forEach((wrapper, index) => {
+        const logo = wrapper.querySelector('.logo');
+
+        wrapper.addEventListener('mousemove', (e) => {
+            // Only apply tilt if logo is focused
+            if (!logo.classList.contains('focused')) return;
+
+            const rect = logo.getBoundingClientRect();
+            const logoCenterX = rect.left + rect.width / 2;
+            const logoCenterY = rect.top + rect.height / 2;
+
+            const deltaX = e.clientX - logoCenterX;
+            const deltaY = e.clientY - logoCenterY;
+
+            // Normalize the direction vector
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const normalizedX = distance > 0 ? deltaX / distance : 0;
+            const normalizedY = distance > 0 ? deltaY / distance : 0;
+
+            const rotateY = normalizedX * maxTilt;
+            const rotateX = -normalizedY * maxTilt;
+
+            // Calculate brightness based on vertical rotation
+            // Tilted up (negative rotateX) = brighter, tilted down = darker
+            const brightnessFactor = 1 + (rotateX / maxTilt) * 0.3; // Range: 0.7 to 1.3
+
+            logo.classList.add('tilt-active');
+            logo.style.transform = `translate(-50%, -50%) scale(1) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            logo.style.filter = `blur(0px) brightness(${brightnessFactor})`;
+        });
+
+        wrapper.addEventListener('mouseleave', () => {
+            if (logo.classList.contains('focused')) {
+                logo.style.transform = 'translate(-50%, -50%) scale(1) rotateX(0deg) rotateY(0deg)';
+                logo.style.filter = 'blur(0px) brightness(1)';
+                setTimeout(() => logo.classList.remove('tilt-active'), 300);
+            }
+        });
+    });
+
+    // Touch support
+    let touchStartY = 0;
+    let touchEndY = 0;
+
+    container.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    container.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+    }, { passive: false });
+
+    container.addEventListener('touchend', (e) => {
+        if (isAnimating) return;
+        touchEndY = e.changedTouches[0].clientY;
+        const delta = touchStartY - touchEndY;
+
+        if (Math.abs(delta) > 50) {
+            if (delta > 0) {
+                scrollToImage(currentIndex + 1);
+            } else {
+                scrollToImage(currentIndex - 1);
+            }
+        }
+    });
+</script>
+</body>
+</html>
