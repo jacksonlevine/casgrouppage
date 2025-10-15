@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>casgrouppage</title>
     <style>
         * {
@@ -36,14 +36,41 @@
             object-fit: cover;
         }
 
-        .logo {
-            opacity: 0;
+        .logo-container {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(6);
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-heading {
+            color: white;
+            font-family: "Trebuchet MS",serif;
+            margin-top: 1rem;
+            font-size: 1.5rem;
+            text-align: center;
+            pointer-events: auto;
+            opacity: 0;
+            transition: opacity 1s ease;
+            transition-delay: 1s;
+            font-style: italic;
+        }
+
+        .logo-container.focused .logo-heading {
+            opacity: 1;
+        }
+
+
+        .logo {
+            opacity: 0;
+            transform-origin: center center;
+            transform: scale(6);
             width: 50vw;
-            aspect-ratio: 1;
+            aspect-ratio: 32/9;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -52,19 +79,20 @@
             transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1),
             filter 1.2s cubic-bezier(0.4, 0, 0.2, 1),
             opacity 0.1s linear;
+            transition-delay: 0s;
             transform-style: preserve-3d;
         }
 
-        .logo.focused {
+        .logo-container.focused .logo {
             opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
+            transform: scale(1);
             filter: blur(0px) brightness(1);
             transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1),
             filter 1.2s cubic-bezier(0.4, 0, 0.2, 1),
             opacity 0.1s linear;
         }
 
-        .logo.focused.tilt-active {
+        .logo-container.focused .logo.tilt-active {
             transition: transform 0.3s ease-out,
             filter 0.3s ease-out;
         }
@@ -123,9 +151,102 @@
         .dot:hover .tooltip {
             opacity: 1;
         }
+        
+        .mainbuttons {
+            padding: 30px;
+            border-radius: 30px;
+            color: white;
+            background: blue;
+            border: none;
+        }
+        .mainbuttons:hover {
+            background:lightblue;
+            cursor:pointer;
+        }
+        .mainbuttonscontainer {
+            padding-top:1rem;
+            padding-bottom:1rem;
+            z-index:100;
+        }
+
+
+        /*This is stuff for the demo toggle switch for the fake3d effect*/
+
+        /* The switch - the box around the slider */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        /* Hide default HTML checkbox */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* The slider */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        /*    End switch stuff for the fake3d toggle*/
+
     </style>
 </head>
 <body>
+
+<div style="position:absolute; left:0; bottom:0; z-index:100;">
+    <label class="switch">
+        <input id="rotation-toggle" type="checkbox" checked>
+        <span class="slider round"></span>
+    </label>
+</div>
 <div id="indicator">
     <div class="dot active"></div>
     <div class="dot"></div>
@@ -136,34 +257,111 @@
     <div class="dot"></div>
 </div>
 
+
+<!--const headings = [-->
+<!--"Simple Heading",-->
+<!--"The Best of Land and Sea ... BioCeutically®",-->
+<!--"Best of Land and Sea... Organically®",-->
+<!--"The Best of Land and Sea...Biotically®",-->
+<!--"The Best of Land and Sea... Both Nutraceutically & Pharmaceutically®",-->
+<!--"The Best of Land and Sea... Scientifically®",-->
+<!--"The Best of Land and Sea... Intellectually®"-->
+<!--];-->
+
+
+
 <div id="container">
     <div class="image-wrapper">
         <img src="/images/BG1_CASGroup.jpg">
-        <div class="logo" style="background-image: url('/images/logos/1.jpg');"></div>
+        <div class="logo-container">
+            <div class="logo" style="background-image: url('/images/logos/1.png');"></div>
+            <div class="logo-heading">
+                <h2>Simple Heading</h2>
+                <div class="mainbuttonscontainer">
+                    <button class="mainbuttons">Test1</button><button class="mainbuttons">Test2</button>
+                </div>
+            </div>
+            
+        </div>
     </div>
     <div class="image-wrapper">
         <img src="/images/BG2_CASBioceuticals.jpg">
-        <div class="logo" style="background-image: url('/images/logos/2.jpg');"></div>
+        <div class="logo-container">
+            <div class="logo" style="background-image: url('/images/logos/2.png');"></div>
+            <div class="logo-heading">
+                <h2 >The Best of Land and Sea ... BioCeutically®</h2>
+                <div class="mainbuttonscontainer">
+                    <button class="mainbuttons">Test1</button><button class="mainbuttons">Test2</button>
+                </div>
+            </div>
+            
+        </div>
     </div>
     <div class="image-wrapper">
         <img src="/images/BG3_CASOrganics.jpg">
-        <div class="logo" style="background-image: url('/images/logos/3.jpg');"></div>
+        <div class="logo-container">
+            <div class="logo" style="background-image: url('/images/logos/3.png');"></div>
+            <div class="logo-heading">
+                <h2 >Best of Land and Sea... Organically®</h2>
+                <div class="mainbuttonscontainer">
+                    <button class="mainbuttons">Test1</button><button class="mainbuttons">Test2</button>
+                </div>
+            </div>
+            
+        </div>
     </div>
     <div class="image-wrapper">
         <img src="/images/BG4_CASBiotics.jpg">
-        <div class="logo" style="background-image: url('/images/logos/4.jpg');"></div>
+        <div class="logo-container">
+            <div class="logo" style="background-image: url('/images/logos/4.png');"></div>
+            
+            <div class="logo-heading">
+                <h2>The Best of Land and Sea...Biotically®</h2>
+                <div class="mainbuttonscontainer">
+                    <button class="mainbuttons">Test1</button><button class="mainbuttons">Test2</button>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="image-wrapper">
         <img src="/images/BG5_CASBioSciences.jpg">
-        <div class="logo" style="background-image: url('/images/logos/5.jpg');"></div>
+        <div class="logo-container">
+            <div class="logo" style="background-image: url('/images/logos/5.png');"></div>
+            <div class="logo-heading">
+                <h2>The Best of Land and Sea... Both Nutraceutically & Pharmaceutically®</h2>
+                <div class="mainbuttonscontainer">
+                    <button class="mainbuttons">Test1</button><button class="mainbuttons">Test2</button>
+                </div>
+            </div>
+            
+        </div>
     </div>
     <div class="image-wrapper">
         <img src="/images/BG6_CASPublishing.jpg">
-        <div class="logo" style="background-image: url('/images/logos/6.jpg');"></div>
+        <div class="logo-container">
+            <div class="logo" style="background-image: url('/images/logos/6.png');"></div>
+
+            <div class="logo-heading">
+                <h2>The Best of Land and Sea... Scientifically®</h2>
+                <div class="mainbuttonscontainer">
+                    <button class="mainbuttons">Test1</button><button class="mainbuttons">Test2</button>
+                </div>
+            </div>
+            
+        </div>
     </div>
     <div class="image-wrapper">
         <img src="/images/BG7_CASProperties.jpg">
-        <div class="logo" style="background-image: url('/images/logos/7.jpg');"></div>
+        <div class="logo-container">
+            <div class="logo" style="background-image: url('/images/logos/7.png');"></div>
+            <div class="logo-heading">
+                <h2>The Best of Land and Sea... Intellectually®</h2>
+                <div class="mainbuttonscontainer">
+                    <button class="mainbuttons">Test1</button><button class="mainbuttons">Test2</button>
+                </div>
+            </div>
+           
+        </div>
     </div>
 </div>
 
@@ -177,6 +375,8 @@
         "CAS Publishing",
         "CAS Properties"
     ];
+
+
 
     const container = document.getElementById('container');
     const wrappers = document.querySelectorAll('.image-wrapper');
@@ -217,10 +417,11 @@
         // Trigger logo animation if this is the first visit
         if (!visitedSections.has(index)) {
             visitedSections.add(index);
-            // Small delay to ensure smooth animation
+            wrappers[index].querySelector('.logo-container').classList.add('focused');
             setTimeout(() => {
-                logos[index].classList.add('focused');
-            }, 100);
+                const logo = wrappers[index].querySelector('.logo');
+                logo.classList.add('tilt-active'); // now mouse can affect it
+            }, 1200);
         }
 
         container.scrollTo({
@@ -246,7 +447,7 @@
         } else {
             scrollToImage(currentIndex - 1);
         }
-    }, { passive: false });
+    }, {passive: false});
 
     dots.forEach((dot, i) => {
         dot.addEventListener('click', () => {
@@ -259,14 +460,17 @@
     });
 
     // 3D tilt effect on logos
-    const maxTilt = 20; // Maximum rotation in degrees
+    const maxTilt = 11; // Maximum rotation in degrees
 
     wrappers.forEach((wrapper, index) => {
         const logo = wrapper.querySelector('.logo');
+        const container = wrapper.querySelector('.logo-container');
+        const rotationToggle = document.getElementById('rotation-toggle');
 
         wrapper.addEventListener('mousemove', (e) => {
-            // Only apply tilt if logo is focused
-            if (!logo.classList.contains('focused')) return;
+            if (!container.classList.contains('focused')) return;
+            if (!logo.classList.contains('tilt-active')) return;
+            if (!rotationToggle.checked) return;
 
             const rect = logo.getBoundingClientRect();
             const logoCenterX = rect.left + rect.width / 2;
@@ -287,15 +491,12 @@
             // Tilted up (negative rotateX) = brighter, tilted down = darker
             const brightnessFactor = 1 + (rotateX / maxTilt) * 0.3; // Range: 0.7 to 1.3
 
-            logo.classList.add('tilt-active');
-            logo.style.transform = `translate(-50%, -50%) scale(1) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            logo.style.transform = `scale(1) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             logo.style.filter = `blur(0px) brightness(${brightnessFactor})`;
         });
 
         wrapper.addEventListener('mouseleave', () => {
             if (logo.classList.contains('focused')) {
-                logo.style.transform = 'translate(-50%, -50%) scale(1) rotateX(0deg) rotateY(0deg)';
-                logo.style.filter = 'blur(0px) brightness(1)';
                 setTimeout(() => logo.classList.remove('tilt-active'), 300);
             }
         });
@@ -307,11 +508,11 @@
 
     container.addEventListener('touchstart', (e) => {
         touchStartY = e.touches[0].clientY;
-    }, { passive: true });
+    }, {passive: true});
 
     container.addEventListener('touchmove', (e) => {
         e.preventDefault();
-    }, { passive: false });
+    }, {passive: false});
 
     container.addEventListener('touchend', (e) => {
         if (isAnimating) return;
@@ -323,6 +524,22 @@
                 scrollToImage(currentIndex + 1);
             } else {
                 scrollToImage(currentIndex - 1);
+            }
+        }
+    });
+    
+    
+    
+    //More stuff here for the rotation toggle swithc
+    const rotationToggle = document.getElementById('rotation-toggle');
+
+    rotationToggle.addEventListener('change', () => {
+        if (!rotationToggle.checked) {
+            // Reset the currently focused logo
+            const focusedLogo = document.querySelector('.logo-container.focused .logo');
+            if (focusedLogo) {
+                focusedLogo.style.transform = 'scale(1) rotateX(0deg) rotateY(0deg)';
+                focusedLogo.style.filter = 'blur(0px) brightness(1)';
             }
         }
     });
